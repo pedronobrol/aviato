@@ -1,10 +1,10 @@
 from canvas import Canvas
-from random import randint, getrandbits
+from random import randint, getrandbits, choice
 from copy import deepcopy
 
 Node = [int]
-Vertex = [Node, Node]
-Graph = [Vertex]
+Edge = [Node, Node, Angle, Type]
+Graph = [Edge]
 
 class Aircraft:
 
@@ -14,12 +14,12 @@ class Aircraft:
     CANVAS_Y_ORIGIN = 400
 
     def __init__(self, graph: Graph = []) -> None:
-        self.graph = Graph
+        self.graph = graph
     def build_2d_model(self, file_name: str):
         canvas = Canvas(file_name, self.CANVAS_HEIGHT, self.CANVAS_WIDTH, self.CANVAS_X_ORIGIN, self.CANVAS_Y_ORIGIN)
         canvas.start_canvas()
-        for vertex in self.graph:
-            canvas.insert_line(vertex[0][0], vertex[1][0], vertex[0][1], vertex[1][1], color = '#f00')
+        for edge in self.graph:
+            canvas.insert_line(edge[0][0], edge[1][0], edge[0][1], edge[1][1], color = choice(['#f00', '#00f']))
         canvas.pack()
     
     def generate_random_graph(self, max_distance: int, max_loops: int) -> Graph:
@@ -42,11 +42,11 @@ class Aircraft:
 
     def mirror_graph(self) -> None:
         mirror = deepcopy(self.graph)
-        for vertex in mirror:
-            vertex[0][0] -= self.CANVAS_WIDTH + 2*self.CANVAS_X_ORIGIN
-            vertex[0][0] *= -1
-            vertex[1][0] -= self.CANVAS_WIDTH + 2*self.CANVAS_X_ORIGIN
-            vertex[1][0] *= -1
+        for edge in mirror:
+            edge[0][0] -= self.CANVAS_WIDTH + 2*self.CANVAS_X_ORIGIN
+            edge[0][0] *= -1
+            edge[1][0] -= self.CANVAS_WIDTH + 2*self.CANVAS_X_ORIGIN
+            edge[1][0] *= -1
         self.graph += mirror
 
     def get_random_start_coordinates(self) -> [int, int]:
@@ -63,5 +63,5 @@ class Aircraft:
 
 aircraft = Aircraft()
 
-print(aircraft.generate_random_graph(3,3))
-aircraft.build_2d_model('sample6.svg')
+print(aircraft.generate_random_graph(2,4))
+aircraft.build_2d_model('sample2.svg')
