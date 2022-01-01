@@ -4,7 +4,7 @@ from copy import deepcopy
 
 Node = [int]
 Edge = [Node, Node, Angle, Type]
-Graph = [Edge]
+Graph = [Edge] # Lista de listas de nodos (cada lista dentro es una cara con tamaño len(lista) + 1)
 
 class Aircraft:
 
@@ -36,9 +36,17 @@ class Aircraft:
                 x2 = randint(self.CANVAS_X_ORIGIN, self.CANVAS_X_ORIGIN + self.CANVAS_WIDTH/2)
                 y2 = randint(self.CANVAS_Y_ORIGIN, self.CANVAS_Y_ORIGIN + self.CANVAS_HEIGHT)
                 self.graph.append([[x1,y1], [x2, y2]])
+                # Añadir cuenta de una cara con tamaño max_loops + 1 para posterior triangulacion
             self.graph[-1][-1] = self.get_random_start_coordinates()
         self.mirror_graph() 
         return self.graph
+
+    def generate_triangulated_graph(self) -> Graph:
+        ''' En las caras con más de 3 lados (no triángulo) se inserta una línea naranja para triangular.
+        De forma iterativa, se hace hasta que todas las caras tengan 3 lados.
+        TODO: Bloque 
+        '''
+        pass
 
     def mirror_graph(self) -> None:
         mirror = deepcopy(self.graph)
