@@ -42,9 +42,9 @@ class Aircraft:
         return self.graph
 
     def generate_triangulated_graph(self) -> Graph:
-        ''' En las caras con más de 3 lados (no triángulo) se inserta una línea naranja para triangular.
-        De forma iterativa, se hace hasta que todas las caras tengan 3 lados.
-        TODO: Bloque 
+        ''' In faces of the graph with more than three edges, we will insert a constraint edge to make a triangle.
+        This will be done repeatedly until all faces have exactly 3 edges.
+        TODO: 
         '''
         pass
 
