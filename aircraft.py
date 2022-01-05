@@ -24,8 +24,9 @@ class Edge:
         print(self.node1)
         print(self.node2)
 class Graph:
-    def __init__(self, edges: List = []) -> None:
+    def __init__(self, edges: List = [], faces: List = []) -> None:
         self.edges = edges
+        self.faces = faces
 
     def append_edge (self, edge: Edge) -> None:
         self.edges.append(edge)
@@ -44,8 +45,8 @@ class Aircraft:
         canvas.start_canvas()
         for edge in self.graph.edges:
             canvas.insert_line(edge.node1[0], edge.node2[0], edge.node1[1], edge.node2[1], edge.angle, edge.type.value)
-        canvas.pack()
-    
+        canvas.pack()  
+
     def generate_random_graph(self, max_distance: int, max_loops: int) -> Graph:
         self.graph  = Graph()
         for loop in range(0, max_loops):
@@ -54,6 +55,7 @@ class Aircraft:
                 if start_loop:
                     x1, y1 = self.get_random_start_coordinates()
                     start_loop = False
+                    self.graph.faces.append(max_distance + 1)
                 else:
                     x1 = x2
                     y1 = y2
@@ -77,6 +79,7 @@ class Aircraft:
             edge.node2[0] *= -1
         # Graph is extended with mirror graph (symetric)
         self.graph.edges.extend(mirror.edges)
+        self.graph.faces.extend(mirror.faces)
 
     def get_random_start_coordinates(self) -> List:
         if bool(getrandbits(1)):
@@ -93,4 +96,4 @@ class Aircraft:
 aircraft = Aircraft()
 
 print(aircraft.generate_random_graph(2,4))
-aircraft.build_2d_model('sample8.svg')
+aircraft.build_2d_model('sample9.svg')
