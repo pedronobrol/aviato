@@ -3,6 +3,7 @@ from canvas import Canvas
 from random import randint, getrandbits, choice, uniform
 from copy import deepcopy
 from enum import Enum
+import matplotlib.pyplot as plt
 
 Node = [int]
 class Type (Enum):
@@ -17,7 +18,8 @@ class Edge:
         self.type = type
 
     def add(self, coords: List) -> None:
-        self.node2 = coords
+        self.node2[0] = coords[0]
+        self.node2[1] = coords[1]
 
     def print (self) -> None:
         print('EDGE')
@@ -47,6 +49,25 @@ class Aircraft:
             canvas.insert_line(edge.node1[0], edge.node2[0], edge.node1[1], edge.node2[1], edge.angle, edge.type.value)
         canvas.pack()  
 
+    def build_3d_model(self, file_name: str) -> None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection= '3d')
+        ax.set_title('Plane 3D Graph Sample')
+        ax.set_xlabel('X Coordinate')
+        ax.set_ylabel('Y Coordinate')
+        ax.set_zlabel('Z Coordinate')
+
+        for edge in self.graph.edges:
+            if edge.type == Type.VALLEY:
+                x, y, z = [edge.node1[0], edge.node2[0]], [edge.node1[1], edge.node2[1]], [edge.node1[2], edge.node2[2]]
+                ax.scatter(x, y, z, c= '#00f')
+                ax.plot(x, y, z, c= '#00f')
+            elif edge.type == Type.MOUNTAIN:
+                x, y, z = [edge.node1[0], edge.node2[0]], [edge.node1[1], edge.node2[1]], [edge.node1[2], edge.node2[2]]
+                ax.scatter(x, y, z, c= '#f00')
+                ax.plot(x, y, z, c= '#f00')
+        plt.show()
+
     def generate_random_graph(self, max_distance: int, max_loops: int) -> Graph:
         self.graph  = Graph()
         for loop in range(0, max_loops):
@@ -63,7 +84,13 @@ class Aircraft:
                 y2 = randint(self.CANVAS_Y_ORIGIN, self.CANVAS_Y_ORIGIN + self.CANVAS_HEIGHT)
                 # Appending new edge with Node1 and Node2, angle [0,1] and type (MOUNTAIN, VALLEY)
                 # TODO: Type and angle symetry in mirror or not?
-                edge = Edge([x1,y1], [x2, y2], uniform(0,1), choice([Type.MOUNTAIN,Type.VALLEY]))
+                edge_type = choice([Type.MOUNTAIN,Type.VALLEY])
+                z = 0
+                if edge_type == Type.MOUNTAIN:
+                    z = 3000
+                else:
+                    z = 1000
+                edge = Edge([x1,y1, z], [x2, y2, z], uniform(0.1,1), edge_type)
                 self.graph.append_edge(edge)
                 # TODO: Change this approach to count faces into the structure
             self.graph.edges[-1].add(self.get_random_start_coordinates())
@@ -96,4 +123,5 @@ class Aircraft:
 aircraft = Aircraft()
 
 print(aircraft.generate_random_graph(2,4))
-aircraft.build_2d_model('sample9.svg')
+aircraft.build_2d_model('sample10.svg')
+aircraft.build_3d_model('')
