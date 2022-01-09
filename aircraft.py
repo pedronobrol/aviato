@@ -21,6 +21,9 @@ class Edge:
         self.node2[0] = coords[0]
         self.node2[1] = coords[1]
 
+    def adapt_3d(self, z: int) -> None:
+        self.node2[2] = z
+
     def print (self) -> None:
         print('EDGE')
         print(self.node1)
@@ -83,16 +86,24 @@ class Aircraft:
                 x2 = randint(self.CANVAS_X_ORIGIN, self.CANVAS_X_ORIGIN + self.CANVAS_WIDTH/2)
                 y2 = randint(self.CANVAS_Y_ORIGIN, self.CANVAS_Y_ORIGIN + self.CANVAS_HEIGHT)
                 # Appending new edge with Node1 and Node2, angle [0,1] and type (MOUNTAIN, VALLEY)
-                # TODO: Type and angle symetry in mirror or not?
+                # TODO: Calculate Z taking into account the necessary forces for realistic folding.
                 edge_type = choice([Type.MOUNTAIN,Type.VALLEY])
-                z = 0
-                if edge_type == Type.MOUNTAIN:
-                    z = 3000
-                else:
-                    z = 1000
-                edge = Edge([x1,y1, z], [x2, y2, z], uniform(0.1,1), edge_type)
+                if edge_type == Type.MOUNTAIN and (node == 0 or self.graph.edges[-1].type == Type.MOUNTAIN):
+                    z1 = 3000
+                    z2 = 3000
+                elif edge_type == Type.VALLEY and (node == 0 or self.graph.edges[-1].type == Type.VALLEY):
+                    z1 = 1000
+                    z2 = 1000
+                elif edge_type == Type.MOUNTAIN and self.graph.edges[-1].type == Type.VALLEY:
+                    z1 = 2000
+                    z2 = 3000
+                    self.graph.edges[-1].adapt_3d(2000)
+                elif edge_type == Type.VALLEY and self.graph.edges[-1].type == Type.MOUNTAIN:
+                    z1 = 2000
+                    z2 = 1000
+                    self.graph.edges[-1].adapt_3d(2000)
+                edge = Edge([x1,y1, z1], [x2, y2, z2], uniform(0.1,1), edge_type)
                 self.graph.append_edge(edge)
-                # TODO: Change this approach to count faces into the structure
             self.graph.edges[-1].add(self.get_random_start_coordinates())
         self.mirror_graph() 
         return self.graph
@@ -123,5 +134,5 @@ class Aircraft:
 aircraft = Aircraft()
 
 print(aircraft.generate_random_graph(2,4))
-aircraft.build_2d_model('sample10.svg')
+aircraft.build_2d_model('sample12.svg')
 aircraft.build_3d_model('')
